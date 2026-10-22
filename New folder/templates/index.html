@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <title>Emotion Detector | Text Insight</title>
+  <style>
+    :root { color-scheme: dark; --bg:#0b1120; --panel:#141e30; --line:#29364b; --text:#eef4ff; --muted:#9eacc3; --accent:#8b9cff; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; color:var(--text); background:radial-gradient(ellipse at 15% 0%,#1b3152 0,transparent 42%),radial-gradient(ellipse at 100% 20%,#2b1d4a 0,transparent 34%),var(--bg); }
+    .wrap { width:min(920px,100% - 32px); margin:0 auto; padding:42px 0 56px; }
+    .brand { display:flex; align-items:center; gap:12px; color:#cbd6ec; font-size:13px; letter-spacing:.13em; text-transform:uppercase; font-weight:800; }
+    .logo { display:grid; place-items:center; width:40px; height:40px; border:1px solid #52648b; border-radius:13px; background:#1c2942; font-size:21px; }
+    header { margin:46px 0 26px; }
+    .eyebrow { color:#aebcff; text-transform:uppercase; letter-spacing:.17em; font-size:12px; font-weight:800; }
+    h1 { font-size:clamp(38px,7vw,66px); line-height:1.02; letter-spacing:-.055em; margin:13px 0 15px; }
+    .gradient { background:linear-gradient(100deg,#fff 10%,#a9b8ff 55%,#d9b5ff); color:transparent; background-clip:text; -webkit-background-clip:text; }
+    .intro { color:var(--muted); max-width:600px; font-size:17px; line-height:1.65; margin:0; }
+    .panel { background:rgba(20,30,48,.88); border:1px solid var(--line); border-radius:22px; padding:clamp(18px,4vw,30px); box-shadow:0 24px 80px #0004; backdrop-filter:blur(12px); }
+    label { display:block; font-size:14px; font-weight:750; margin-bottom:12px; }
+    textarea { width:100%; min-height:150px; resize:vertical; padding:17px; border-radius:14px; border:1px solid #35445e; outline:none; background:#0d1626; color:var(--text); font:inherit; line-height:1.6; }
+    textarea:focus { border-color:var(--accent); box-shadow:0 0 0 3px #8b9cff20; }
+    textarea::placeholder { color:#71819b; }
+    .formfoot { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:14px; margin-top:15px; }
+    .hint { color:var(--muted); font-size:12px; }
+    button { border:0; border-radius:12px; padding:13px 20px; background:linear-gradient(110deg,#8b9cff,#c3a5ff); color:#11182a; font-weight:850; font-size:14px; cursor:pointer; box-shadow:0 8px 24px #8b9cff2c; }
+    button:hover { filter:brightness(1.08); transform:translateY(-1px); }
+    .error { margin-top:16px; border:1px solid #884d58; background:#4a202d88; padding:13px 15px; border-radius:12px; color:#ffd8de; }
+    .results { margin-top:22px; }
+    .resulthead { display:flex; flex-wrap:wrap; align-items:flex-start; justify-content:space-between; gap:14px; margin-bottom:20px; }
+    h2 { margin:0 0 7px; font-size:23px; letter-spacing:-.025em; }
+    .muted { color:var(--muted); font-size:13px; line-height:1.5; }
+    .source { display:inline-flex; border:1px solid #42506b; color:#c7d2ea; background:#202c40; padding:7px 10px; border-radius:999px; font-size:11px; font-weight:800; }
+    .dominant { border:1px solid #39486a; background:linear-gradient(110deg,#202f4b,#27223f); border-radius:16px; padding:19px; margin-bottom:18px; }
+    .dominant small { display:block; color:#b5c2dd; text-transform:uppercase; letter-spacing:.12em; font-size:11px; font-weight:800; margin-bottom:8px; }
+    .dominant strong { font-size:28px; text-transform:capitalize; }
+    .scores { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+    .score { background:#0d1626; border:1px solid #26344a; padding:15px; border-radius:14px; }
+    .scoretop { display:flex; justify-content:space-between; gap:10px; font-size:13px; font-weight:750; text-transform:capitalize; }
+    .track { height:6px; background:#26334a; border-radius:99px; margin-top:13px; overflow:hidden; }
+    .bar { height:100%; background:linear-gradient(90deg,#8195ff,#c7a3ff); border-radius:99px; }
+    .footnote { color:var(--muted); font-size:12px; line-height:1.6; margin:16px 2px 0; }
+    footer { color:#6f7f98; font-size:12px; text-align:center; margin-top:28px; }
+    @media(max-width:540px) { .wrap{padding-top:24px}.scores{grid-template-columns:1fr}header{margin-top:34px}.formfoot button{width:100%}.formfoot{align-items:stretch} }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="brand"><span class="logo" aria-hidden="true">✳</span> Text Insight <span style="color:#71819b">/</span> Emotion AI</div>
+    <header>
+      <div class="eyebrow">Understand the feeling behind the words</div>
+      <h1>Words carry <span class="gradient">emotion.</span></h1>
+      <p class="intro">Enter a sentence and explore its emotional tone across five categories. A simple, clear demo for your Emotion Detector project.</p>
+    </header>
+
+    <section class="panel">
+      <form method="post">
+        <label for="text">Your text</label>
+        <textarea id="text" name="text" maxlength="5000" placeholder="Try: I am so happy and excited about my future!" required>{{ submitted_text }}</textarea>
+        <div class="formfoot">
+          <span class="hint">Up to 5,000 characters · Your text stays in this local app</span>
+          <button type="submit">Analyze emotions &nbsp; ↗</button>
+        </div>
+      </form>
+      {% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+    </section>
+
+    {% if result %}
+    <section class="panel results" aria-live="polite">
+      <div class="resulthead">
+        <div><h2>Analysis report</h2><div class="muted">A snapshot of the emotional signals in your text.</div></div>
+        {% if result.source == "watson" %}
+          <span class="source">● Watson API result</span>
+        {% else %}
+          <span class="source">● Local demo estimate</span>
+        {% endif %}
+      </div>
+      <div class="dominant">
+        <small>Dominant emotion</small>
+        <strong>{{ result.dominant_emotion }}</strong>
+      </div>
+      <div class="scores">
+        {% for emotion in ["anger", "disgust", "fear", "joy", "sadness"] %}
+        <div class="score">
+          <div class="scoretop"><span>{{ emotion }}</span><span>{% if result[emotion] is not none %}{{ "%.1f"|format(result[emotion] * 100) }}%{% else %}—{% endif %}</span></div>
+          <div class="track"><div class="bar" style="width:{{ (result[emotion] * 100) if result[emotion] is not none else 0 }}%"></div></div>
+        </div>
+        {% endfor %}
+      </div>
+      {% if result.source == "local" %}
+      <p class="footnote">The Watson service could not be reached, so this result uses simple keyword matching for demonstration. It is not a trained AI prediction and may miss context, sarcasm, or mixed emotions.</p>
+      {% else %}
+      <p class="footnote">Scores are returned by the Watson NLP Emotion Prediction service.</p>
+      {% endif %}
+    </section>
+    {% endif %}
+    <footer>Emotion Detector · Student project · Flask + Python</footer>
+  </main>
+</body>
+</html>
